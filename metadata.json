@@ -1,0 +1,6 @@
+{
+  "name": "BJU-VERSE",
+  "description": "Premium Futuristic Cyberpunk Streaming, Apps & Digital Hub featuring Neon Aesthetic, Custom Interactive Media Player and Media Dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

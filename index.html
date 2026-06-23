@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BJU-VERSE | Cyberpunk Premium Streaming Hub</title>
+    <script>
+      (function() {
+        const isBenign = (msg) => {
+          if (!msg) return false;
+          const normalized = String(msg).toLowerCase();
+          return (
+            normalized.includes('websocket') ||
+            normalized.includes('web socket') ||
+            normalized.includes('script error') ||
+            normalized.includes('hmr') ||
+            normalized.includes('[vite]') ||
+            normalized.includes('closed without opened') ||
+            normalized.includes('connection failed')
+          );
+        };
+
+        window.addEventListener('error', function(e) {
+          if (isBenign(e.message) || isBenign(e.error)) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(e) {
+          const reason = e.reason;
+          const msg = reason instanceof Error ? reason.message : String(reason);
+          if (isBenign(msg)) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+
+        const filterConsole = (origFn) => {
+          return function(...args) {
+            const joint = args.map(arg => {
+              try {
+                if (typeof arg === 'object' && arg !== null) return JSON.stringify(arg);
+                return String(arg);
+              } catch(e) {
+                return String(arg);
+              }
+            }).join(' ');
+            if (isBenign(joint)) {
+              return;
+            }
+            return origFn.apply(this, args);
+          };
+        };
+
+        console.log = filterConsole(console.log);
+        console.warn = filterConsole(console.warn);
+        console.error = filterConsole(console.error);
+        console.info = filterConsole(console.info);
+        console.debug = filterConsole(console.debug);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
